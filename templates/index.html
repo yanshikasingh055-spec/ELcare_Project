@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Predictor - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .navbar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 24px;
+            background: rgba(255,255,255,0.08);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 7px 16px;
+            border-radius: 20px;
+            transition: background 0.2s;
+        }
+        .navbar a:hover { background: rgba(255,255,255,0.15); }
+        .navbar a.btn-outline {
+            border: 1.5px solid rgba(255,255,255,0.6);
+        }
+        .navbar a.btn-solid {
+            background: #fff;
+            color: #5e35b1;
+            font-weight: 600;
+        }
+        .navbar a.btn-solid:hover { background: #f0eaff; }
+        .navbar .nav-username {
+            color: rgba(255,255,255,0.85);
+            font-size: 0.9rem;
+            margin-right: 4px;
+        }
+        /* wrap existing header so navbar sits inside container */
+        .top-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <nav class="navbar">
+            {% if current_user.is_authenticated %}
+                <span class="nav-username"><i class="fas fa-user-circle"></i> {{ current_user.username }}</span>
+                <a href="/profile" class="btn-outline"><i class="fas fa-id-card"></i> Profile</a>
+                <a href="/history" class="btn-outline"><i class="fas fa-history"></i> History</a>
+                <a href="/logout" class="btn-solid"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            {% else %}
+                <a href="/login" class="btn-outline"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="/register" class="btn-solid"><i class="fas fa-user-plus"></i> Register</a>
+            {% endif %}
+        </nav>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-heartbeat"></i> Medical Disease Predictor</h1>
+            <p class="subtitle">AI-powered early detection system for multiple diseases</p>
+        </header>
+
+        {% if not current_user.is_authenticated %}
+        <div style="background:#fff3cd; border:1px solid #ffc107; border-radius:10px; padding:12px 20px; margin-bottom:20px; font-size:0.95rem; color:#856404;">
+            <i class="fas fa-info-circle"></i>
+            <strong>Tip:</strong> <a href="/login" style="color:#5e35b1;">Log in</a> or <a href="/register" style="color:#5e35b1;">Register</a> to save your prediction history and patient profile.
+        </div>
+        {% endif %}
+
+        <div class="models-grid">
+            <div class="model-card" onclick="window.location.href='/parkinsons'">
+                <div class="model-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h2>Parkinson's Disease</h2>
+                <p>Predict Parkinson's disease using voice measurement features</p>
+                <div class="model-stats">
+                    <span><i class="fas fa-microphone"></i> 22 Features</span>
+                    <span><i class="fas fa-robot"></i> SVM Model</span>
+                </div>
+                <button class="predict-btn">Start Prediction <i class="fas fa-arrow-right"></i></button>
+            </div>
+
+            <div class="model-card" onclick="window.location.href='/heart'">
+                <div class="model-icon heart">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h2>Heart Disease</h2>
+                <p>Predict heart disease using medical parameters</p>
+                <div class="model-stats">
+                    <span><i class="fas fa-stethoscope"></i> 13 Features</span>
+                    <span><i class="fas fa-chart-line"></i> Logistic Regression</span>
+                </div>
+                <button class="predict-btn">Start Prediction <i class="fas fa-arrow-right"></i></button>
+            </div>
+
+            <div class="model-card" onclick="window.location.href='/diabetes'">
+                <div class="model-icon diabetes">
+                    <i class="fas fa-syringe"></i>
+                </div>
+                <h2>Diabetes</h2>
+                <p>Predict diabetes using health indicators</p>
+                <div class="model-stats">
+                    <span><i class="fas fa-file-medical"></i> 8 Features</span>
+                    <span><i class="fas fa-robot"></i> SVM Model</span>
+                </div>
+                <button class="predict-btn">Start Prediction <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2><i class="fas fa-info-circle"></i> How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Select Disease Type</h3>
+                    <p>Choose the disease you want to predict from the options above</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Enter Medical Data</h3>
+                    <p>Fill in the required medical parameters in the form</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Get Prediction</h3>
+                    <p>Our AI model analyzes the data and provides a prediction</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>View Results</h3>
+                    <p>Receive immediate results with detailed information</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>Disclaimer:</strong> This tool is for educational and research purposes only.
+            Always consult with healthcare professionals for medical diagnoses.</p>
+            <p class="footer-note">Medical Predictor System v1.0</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

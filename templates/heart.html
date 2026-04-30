@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="disease-header">
+            <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+            <h1><i class="fas fa-heart"></i> Heart Disease Predictor</h1>
+            <p class="subtitle">Enter cardiac parameters for heart disease prediction</p>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="form-section">
+                <h2><i class="fas fa-edit"></i> Input Parameters</h2>
+                <p class="form-description">Enter 13 cardiac parameters for heart disease prediction</p>
+                
+                <form id="heartForm">
+                    <div class="input-grid">
+                        <div class="form-group">
+                            <label for="age">Age (years)</label>
+                            <input type="number" id="age" placeholder="e.g., 41" min="20" max="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sex">Sex (1=male, 0=female)</label>
+                            <select id="sex" required>
+                                <option value="">Select</option>
+                                <option value="1">Male</option>
+                                <option value="0">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cp">Chest Pain Type (0-3)</label>
+                            <select id="cp" required>
+                                <option value="">Select</option>
+                                <option value="0">Typical Angina</option>
+                                <option value="1">Atypical Angina</option>
+                                <option value="2">Non-anginal Pain</option>
+                                <option value="3">Asymptomatic</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="trestbps">Resting BP (mm Hg)</label>
+                            <input type="number" id="trestbps" placeholder="e.g., 130" min="90" max="200" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="chol">Cholesterol (mg/dl)</label>
+                            <input type="number" id="chol" placeholder="e.g., 204" min="100" max="600" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="fbs">Fasting Blood Sugar > 120 mg/dl</label>
+                            <select id="fbs" required>
+                                <option value="">Select</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="restecg">Resting ECG Results</label>
+                            <select id="restecg" required>
+                                <option value="">Select</option>
+                                <option value="0">Normal</option>
+                                <option value="1">ST-T Wave Abnormality</option>
+                                <option value="2">Left Ventricular Hypertrophy</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="thalach">Max Heart Rate Achieved</label>
+                            <input type="number" id="thalach" placeholder="e.g., 172" min="60" max="220" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exang">Exercise Induced Angina</label>
+                            <select id="exang" required>
+                                <option value="">Select</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="oldpeak">ST Depression Induced by Exercise</label>
+                            <input type="number" step="0.1" id="oldpeak" placeholder="e.g., 1.4" min="0" max="10" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="slope">Slope of Peak Exercise ST Segment</label>
+                            <select id="slope" required>
+                                <option value="">Select</option>
+                                <option value="0">Upsloping</option>
+                                <option value="1">Flat</option>
+                                <option value="2">Downsloping</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ca">Number of Major Vessels Colored by Fluoroscopy (0-3)</label>
+                            <input type="number" id="ca" placeholder="e.g., 2" min="0" max="3" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="thal">Thalassemia (1-3)</label>
+                            <select id="thal" required>
+                                <option value="">Select</option>
+                                <option value="1">Normal</option>
+                                <option value="2">Fixed Defect</option>
+                                <option value="3">Reversible Defect</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="sampleBtn">
+                            <i class="fas fa-vial"></i> Load Sample Data
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-heartbeat"></i> Predict Heart Disease
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="result-section">
+                <h2><i class="fas fa-chart-line"></i> Prediction Results</h2>
+                <div id="resultContainer" class="result-container">
+                    <div class="result-placeholder">
+                        <i class="fas fa-heart"></i>
+                        <h3>Awaiting Prediction</h3>
+                        <p>Fill in all parameters and click "Predict" to see results</p>
+                    </div>
+                </div>
+
+                <div class="model-info">
+                    <h3><i class="fas fa-info-circle"></i> Model Information</h3>
+                    <ul>
+                        <li><strong>Model Type:</strong> Logistic Regression</li>
+                        <li><strong>Features:</strong> 13 cardiac parameters</li>
+                        <li><strong>Accuracy:</strong> ~85% (test data)</li>
+                        <li><strong>Data Source:</strong> UCI Heart Disease Dataset</li>
+                    </ul>
+                </div>
+
+                <div class="tips">
+                    <h3><i class="fas fa-lightbulb"></i> Heart Health Tips</h3>
+                    <ul>
+                        <li>Maintain a healthy diet low in saturated fats</li>
+                        <li>Exercise regularly (30 minutes daily)</li>
+                        <li>Monitor blood pressure regularly</li>
+                        <li>Avoid smoking and limit alcohol</li>
+                        <li>Manage stress through relaxation techniques</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Sample data for Heart Disease
+        const heartSampleData = {
+            age: 41,
+            sex: 0,
+            cp: 1,
+            trestbps: 130,
+            chol: 204,
+            fbs: 0,
+            restecg: 0,
+            thalach: 172,
+            exang: 0,
+            oldpeak: 1.4,
+            slope: 2,
+            ca: 0,
+            thal: 2
+        };
+
+        document.getElementById('sampleBtn').addEventListener('click', function() {
+            for (const [key, value] of Object.entries(heartSampleData)) {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = value;
+                }
+            }
+            showNotification('Sample data loaded!', 'success');
+        });
+
+        document.getElementById('heartForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const features = [
+                parseInt(document.getElementById('age').value),
+                parseInt(document.getElementById('sex').value),
+                parseInt(document.getElementById('cp').value),
+                parseInt(document.getElementById('trestbps').value),
+                parseInt(document.getElementById('chol').value),
+                parseInt(document.getElementById('fbs').value),
+                parseInt(document.getElementById('restecg').value),
+                parseInt(document.getElementById('thalach').value),
+                parseInt(document.getElementById('exang').value),
+                parseFloat(document.getElementById('oldpeak').value),
+                parseInt(document.getElementById('slope').value),
+                parseInt(document.getElementById('ca').value),
+                parseInt(document.getElementById('thal').value)
+            ];
+
+            // Validate all features are numbers
+            if (features.some(isNaN)) {
+                showNotification('Please fill in all fields with valid numbers', 'error');
+                return;
+            }
+
+            showLoading();
+            
+            try {
+                const response = await fetch('/api/predict/heart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ features: features })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayHeartResult(data);
+                } else {
+                    throw new Error(data.error || 'Prediction failed');
+                }
+            } catch (error) {
+                showNotification(`Error: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        function displayHeartResult(data) {
+            const resultContainer = document.getElementById('resultContainer');
+            const isPositive = data.prediction === 1;
+            
+            resultContainer.innerHTML = `
+                <div class="result-card ${isPositive ? 'positive' : 'negative'}">
+                    <div class="result-header">
+                        <i class="fas ${isPositive ? 'fa-heart-broken' : 'fa-heart'}"></i>
+                        <h3>${isPositive ? 'Heart Disease Detected' : 'No Heart Disease Detected'}</h3>
+                    </div>
+                    <div class="result-body">
+                        <div class="prediction-indicator">
+                            <div class="indicator-circle ${isPositive ? 'positive' : 'negative'}">
+                                <span>${isPositive ? 'POSITIVE' : 'NEGATIVE'}</span>
+                            </div>
+                            <p class="confidence">Prediction Confidence: <strong>High</strong></p>
+                        </div>
+                        <div class="result-details">
+                            <p><i class="fas fa-info-circle"></i> <strong>Result:</strong> ${data.message}</p>
+                            <p><i class="fas fa-code"></i> <strong>Prediction Value:</strong> ${data.prediction}</p>
+                            <p><i class="fas fa-clock"></i> <strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+                        </div>
+                        <div class="recommendations">
+                            <h4><i class="fas fa-stethoscope"></i> Recommendations:</h4>
+                            <ul>
+                                ${isPositive ? 
+                                    '<li>Consult a cardiologist immediately</li>' +
+                                    '<li>Get an ECG and stress test</li>' +
+                                    '<li>Monitor blood pressure regularly</li>' +
+                                    '<li>Follow prescribed medication regimen</li>' :
+                                    '<li>Continue regular cardiovascular exercise</li>' +
+                                    '<li>Maintain healthy cholesterol levels</li>' +
+                                    '<li>Annual heart health check-ups</li>' +
+                                    '<li>Balanced diet and weight management</li>'
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Scroll to results
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+            showNotification('Prediction completed successfully!', 'success');
+        }
+    </script>
+</body>
+</html>

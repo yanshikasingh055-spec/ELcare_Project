@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - ElCare</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .profile-wrapper { max-width: 700px; margin: 40px auto; padding: 0 20px; }
+        .profile-header { display: flex; align-items: center; gap: 18px; margin-bottom: 28px; }
+        .avatar { width: 64px; height: 64px; border-radius: 50%; background: #4e73df; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2rem; flex-shrink: 0; }
+        .profile-header h2 { margin: 0; font-size: 1.5rem; }
+        .profile-header p { margin: 4px 0 0; color: #888; }
+        .card { background: #fff; border-radius: 14px; padding: 28px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); margin-bottom: 24px; }
+        .card h3 { margin: 0 0 20px; font-size: 1.1rem; color: #4e73df; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full { grid-column: 1 / -1; }
+        label { font-size: 0.9rem; font-weight: 500; color: #555; }
+        input, select, textarea { padding: 10px 12px; border: 1.5px solid #e0e0e0; border-radius: 8px; font-size: 0.95rem; transition: border 0.2s; width: 100%; box-sizing: border-box; }
+        input:focus, select:focus, textarea:focus { border-color: #4e73df; outline: none; }
+        textarea { resize: vertical; min-height: 70px; }
+        .btn-save { padding: 11px 28px; background: #4e73df; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .btn-save:hover { background: #3a57b5; }
+        .bmi-box { background: #f0f4ff; border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+        .bmi-value { font-size: 2rem; font-weight: 700; color: #4e73df; }
+        .bmi-label { color: #666; font-size: 0.9rem; }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: #27ae60; color: #fff; padding: 12px 22px; border-radius: 10px; font-weight: 500; display: none; z-index: 9999; }
+        .nav-links { display: flex; gap: 14px; margin-bottom: 20px; }
+        .nav-links a { color: #4e73df; text-decoration: none; font-weight: 500; font-size: 0.95rem; }
+        .nav-links a:hover { text-decoration: underline; }
+        @media (max-width: 500px) { .form-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="profile-wrapper">
+    <div class="nav-links">
+        <a href="/"><i class="fas fa-home"></i> Home</a>
+        <a href="/history"><i class="fas fa-history"></i> History</a>
+        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <div class="profile-header">
+        <div class="avatar"><i class="fas fa-user"></i></div>
+        <div>
+            <h2>{{ user.username }}</h2>
+            <p>{{ user.email }} &bull; Member since {{ user.created_at.strftime('%b %Y') }}</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-id-card"></i> Personal Information</h3>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="full_name" placeholder="Your full name">
+            </div>
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" id="date_of_birth">
+            </div>
+            <div class="form-group">
+                <label>Gender</label>
+                <select id="gender">
+                    <option value="">-- Select --</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" id="phone" placeholder="+91 XXXXX XXXXX">
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-heartbeat"></i> Medical Information</h3>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Blood Group</label>
+                <select id="blood_group">
+                    <option value="">-- Select --</option>
+                    <option>A+</option><option>A-</option>
+                    <option>B+</option><option>B-</option>
+                    <option>AB+</option><option>AB-</option>
+                    <option>O+</option><option>O-</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Height (cm)</label>
+                <input type="number" id="height_cm" placeholder="e.g. 170" min="50" max="250">
+            </div>
+            <div class="form-group">
+                <label>Weight (kg)</label>
+                <input type="number" id="weight_kg" placeholder="e.g. 70" min="10" max="300">
+            </div>
+            <div class="form-group" style="align-self:end;">
+                <div class="bmi-box">
+                    <div class="bmi-value" id="bmiDisplay">--</div>
+                    <div class="bmi-label">BMI<br><small id="bmiCategory"></small></div>
+                </div>
+            </div>
+            <div class="form-group full">
+                <label>Existing Medical Conditions</label>
+                <textarea id="existing_conditions" placeholder="e.g. Hypertension, Asthma..."></textarea>
+            </div>
+            <div class="form-group full">
+                <label>Current Medications</label>
+                <textarea id="medications" placeholder="e.g. Metformin 500mg..."></textarea>
+            </div>
+            <div class="form-group full">
+                <label>Allergies</label>
+                <textarea id="allergies" placeholder="e.g. Penicillin, Peanuts..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-save" onclick="saveProfile()"><i class="fas fa-save"></i> Save Profile</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Load profile on page load
+async function loadProfile() {
+    const res = await fetch('/api/profile');
+    const data = await res.json();
+    if (!data.success) return;
+    const p = data.profile;
+    setVal('full_name', p.full_name);
+    setVal('date_of_birth', p.date_of_birth);
+    setVal('gender', p.gender);
+    setVal('phone', p.phone);
+    setVal('blood_group', p.blood_group);
+    setVal('height_cm', p.height_cm);
+    setVal('weight_kg', p.weight_kg);
+    setVal('existing_conditions', p.existing_conditions);
+    setVal('medications', p.medications);
+    setVal('allergies', p.allergies);
+    if (p.bmi) updateBMIDisplay(p.bmi);
+}
+
+function setVal(id, val) {
+    const el = document.getElementById(id);
+    if (el && val !== null && val !== undefined) el.value = val;
+}
+
+async function saveProfile() {
+    const payload = {
+        full_name: document.getElementById('full_name').value,
+        date_of_birth: document.getElementById('date_of_birth').value,
+        gender: document.getElementById('gender').value,
+        phone: document.getElementById('phone').value,
+        blood_group: document.getElementById('blood_group').value,
+        height_cm: parseFloat(document.getElementById('height_cm').value) || null,
+        weight_kg: parseFloat(document.getElementById('weight_kg').value) || null,
+        existing_conditions: document.getElementById('existing_conditions').value,
+        medications: document.getElementById('medications').value,
+        allergies: document.getElementById('allergies').value,
+    };
+    const res = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.success) {
+        if (data.bmi) updateBMIDisplay(data.bmi);
+        showToast('Profile saved!');
+    } else {
+        showToast('Error: ' + data.message, true);
+    }
+}
+
+function updateBMIDisplay(bmi) {
+    document.getElementById('bmiDisplay').textContent = bmi;
+    let cat = '';
+    if (bmi < 18.5) cat = 'Underweight';
+    else if (bmi < 25) cat = 'Normal';
+    else if (bmi < 30) cat = 'Overweight';
+    else cat = 'Obese';
+    document.getElementById('bmiCategory').textContent = cat;
+}
+
+// Live BMI calc
+['height_cm', 'weight_kg'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+        const h = parseFloat(document.getElementById('height_cm').value);
+        const w = parseFloat(document.getElementById('weight_kg').value);
+        if (h > 0 && w > 0) updateBMIDisplay(Math.round(w / ((h / 100) ** 2) * 10) / 10);
+    });
+});
+
+function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.background = isError ? '#e74c3c' : '#27ae60';
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+}
+
+loadProfile();
+</script>
+</body>
+</html>

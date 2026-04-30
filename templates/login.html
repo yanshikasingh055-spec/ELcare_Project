@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ElCare</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .auth-wrapper { max-width: 420px; margin: 80px auto; padding: 0 20px; }
+        .auth-card { background: var(--card-bg, #fff); border-radius: 16px; padding: 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.10); }
+        .auth-card h2 { text-align: center; margin-bottom: 8px; font-size: 1.7rem; }
+        .auth-card .subtitle { text-align: center; color: #888; margin-bottom: 28px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; }
+        .form-group input { width: 100%; padding: 11px 14px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; transition: border 0.2s; }
+        .form-group input:focus { border-color: #4e73df; outline: none; }
+        .btn-full { width: 100%; padding: 12px; font-size: 1rem; border-radius: 8px; border: none; background: #4e73df; color: #fff; cursor: pointer; font-weight: 600; margin-top: 6px; transition: background 0.2s; }
+        .btn-full:hover { background: #3a57b5; }
+        .auth-link { text-align: center; margin-top: 18px; color: #666; }
+        .auth-link a { color: #4e73df; text-decoration: none; font-weight: 500; }
+        .alert { padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 0.95rem; }
+        .alert-error { background: #fde8e8; color: #c0392b; }
+        .alert-success { background: #e8f8f0; color: #27ae60; }
+        .brand { text-align: center; margin-bottom: 24px; font-size: 1.1rem; color: #4e73df; font-weight: 700; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+<div class="auth-wrapper">
+    <div class="brand"><i class="fas fa-heartbeat"></i> ElCare</div>
+    <div class="auth-card">
+        <h2>Welcome back</h2>
+        <p class="subtitle">Log in to your account</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endwith %}
+
+        <div id="alertBox" style="display:none;" class="alert"></div>
+
+        <div class="form-group">
+            <label for="username"><i class="fas fa-user"></i> Username</label>
+            <input type="text" id="username" placeholder="Enter your username" autocomplete="username">
+        </div>
+        <div class="form-group">
+            <label for="password"><i class="fas fa-lock"></i> Password</label>
+            <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
+        </div>
+        <button class="btn-full" onclick="doLogin()">
+            <i class="fas fa-sign-in-alt"></i> Log In
+        </button>
+        <p class="auth-link">Don't have an account? <a href="/register">Register</a></p>
+    </div>
+</div>
+<script>
+async function doLogin() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const alertBox = document.getElementById('alertBox');
+    if (!username || !password) {
+        showAlert('Please fill in all fields.', 'error'); return;
+    }
+    const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (data.success) {
+        window.location.href = data.redirect || '/';
+    } else {
+        showAlert(data.message, 'error');
+    }
+}
+function showAlert(msg, type) {
+    const box = document.getElementById('alertBox');
+    box.textContent = msg;
+    box.className = `alert alert-${type}`;
+    box.style.display = 'block';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+</script>
+</body>
+</html>
