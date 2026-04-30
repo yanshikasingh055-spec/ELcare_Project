@@ -137,12 +137,14 @@ Models are trained on startup using the datasets in the `/data` folder.
 
 ## 📸 Screenshots
 
-> ![Home page](<Screenshot 2026-04-30 100123.png>)
->![Register page](<Screenshot 2026-04-30 100144.png>)
->![Login page](<Screenshot 2026-04-30 100212.png>)
->![Parkinsons detection](<Screenshot 2026-04-30 100236.png>)
->![Heart Disease prediction](<Screenshot 2026-04-30 100311.png>)
->![Diabetes Prediction](<Screenshot 2026-04-30 100326.png>)
+### Home Page
+![Home](screenshots/home.png)
+
+### Login Page
+![Login](screenshots/login.png)
+
+### Prediction Page
+![Prediction](screenshots/prediction.png)
 ---
 
 ## ⚠️ Disclaimer
